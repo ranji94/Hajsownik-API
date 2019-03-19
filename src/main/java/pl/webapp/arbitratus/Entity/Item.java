@@ -3,13 +3,11 @@ package pl.webapp.arbitratus.Entity;
 import org.apache.commons.text.WordUtils;
 
 import javax.persistence.*;
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name="Item")
-public class Item implements Serializable {
+@Table(name="ITEM")
+public class Item { //implements Serializable
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -22,16 +20,12 @@ public class Item implements Serializable {
     private float price;
     @Column(name = "SHOP")
     private String shop;
-    @ManyToMany(mappedBy = "items")
-    List<ShoppingList> shoppinglists = new ArrayList<>();
-
-    public List<ShoppingList> getShoppinglists() {
-        return shoppinglists;
-    }
-
-    public void setShoppinglists(List<ShoppingList> shoppinglists) {
-        this.shoppinglists = shoppinglists;
-    }
+    @Column(name = "APPROVED")
+    private boolean approved = true;
+    //@ManyToMany(mappedBy = "items")
+    //List<ShoppingList> shoppinglists = new ArrayList<>();
+    @OneToMany(mappedBy = "item")
+    List<ItemShoppinglist> itemShoppinglists;
 
     public Item(){
     }
@@ -69,4 +63,19 @@ public class Item implements Serializable {
         this.shop = WordUtils.capitalizeFully(shop.trim());
     }
 
+    public List<ItemShoppinglist> getItemShoppinglists() {
+        return itemShoppinglists;
+    }
+
+    public void setItemShoppinglists(List<ItemShoppinglist> itemShoppinglists) {
+        this.itemShoppinglists = itemShoppinglists;
+    }
+
+    public boolean isApproved() {
+        return approved;
+    }
+
+    public void setApproved(boolean approved) {
+        this.approved = approved;
+    }
 }

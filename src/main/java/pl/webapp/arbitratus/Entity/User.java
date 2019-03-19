@@ -1,6 +1,10 @@
 package pl.webapp.arbitratus.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -14,8 +18,12 @@ public class User {
     private String username;
     @Column(name="PASSWORD")
     private String password;
-    @OneToMany(mappedBy = "user")
-    private Set<ShoppingList> shoppingList;
+    @ManyToMany(mappedBy = "users")
+    @JsonIgnore
+    List<Shoppinglist> shoppinglists = new ArrayList<>();
+
+    public User() {
+    }
 
     public long getId() {
         return id;
@@ -41,11 +49,11 @@ public class User {
         this.password = password;
     }
 
-    public Set<ShoppingList> getShoppingList() {
-        return shoppingList;
+    public List<Shoppinglist> getShoppinglists() {
+        return shoppinglists;
     }
 
-    public void setShoppingList(Set<ShoppingList> shoppingList) {
-        this.shoppingList = shoppingList;
+    public void setShoppinglists(List<Shoppinglist> shoppinglists) {
+        this.shoppinglists = shoppinglists;
     }
 }

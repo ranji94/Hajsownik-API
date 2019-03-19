@@ -4,14 +4,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.webapp.arbitratus.Entity.Item;
 import pl.webapp.arbitratus.Repository.ItemRepository;
-import pl.webapp.arbitratus.Repository.ShoppingListRepository;
+import pl.webapp.arbitratus.Repository.ShoppinglistRepository;
+
+import java.util.List;
 
 @Service
 public class ItemService {
     @Autowired
     ItemRepository itemRepository;
     @Autowired
-    ShoppingListRepository shoppingListRepository;
+    ShoppinglistRepository shoppinglistRepository;
 
     public Item createNewItem(Item item) {
         if (itemRepository.existsItemByName(item.getName())) {
@@ -29,5 +31,10 @@ public class ItemService {
     public Item getItemById(long id)
     {
         return itemRepository.findItemById(id);
+    }
+
+    public List<Item> getAllItems()
+    {
+        return itemRepository.findAll();
     }
 }

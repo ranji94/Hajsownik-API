@@ -3,23 +3,21 @@ package pl.webapp.arbitratus.Controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import pl.webapp.arbitratus.Entity.Item;
-import pl.webapp.arbitratus.Entity.ShoppingList;
-import pl.webapp.arbitratus.Repository.ShoppingListRepository;
+import pl.webapp.arbitratus.Entity.Shoppinglist;
+import pl.webapp.arbitratus.Entity.User;
+import pl.webapp.arbitratus.Repository.ShoppinglistRepository;
 import pl.webapp.arbitratus.Repository.UserRepository;
 import pl.webapp.arbitratus.Service.ItemService;
 import pl.webapp.arbitratus.Service.ShoppingService;
 
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @CrossOrigin
 public class ShoppingController {
     @Autowired
-    private ShoppingListRepository shoppingListRepository;
+    private ShoppinglistRepository shoppingListRepository;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -27,23 +25,38 @@ public class ShoppingController {
     @Autowired
     ShoppingService shoppingService;
 
-    public ShoppingController(ItemService itemService, ShoppingListRepository shoppingListRepository) {
+    public ShoppingController(ItemService itemService, ShoppinglistRepository shoppingListRepository, ShoppingService shoppingService, UserRepository userRepository) {
         this.itemService = itemService;
         this.shoppingListRepository = shoppingListRepository;
+        this.shoppingService = shoppingService;
+        this.userRepository = userRepository;
     }
 
     @PostMapping("/shopping")
-    public ShoppingList createList(ShoppingList shoppingList, Principal principal)
+    public Shoppinglist createList(Shoppinglist shoppingList, Principal principal)
     {
-        List<Item> przedmioty = new ArrayList<>();
-        shoppingList.setItems(przedmioty);
-        shoppingList.setUser(userRepository.findByUsername(principal.getName()));
+        List<User> listUsers = shoppingList.getUsers();
+        String username = principal.getName();
+        listUsers.add(userRepository.findByUsername(username));
+        shoppingList.setUsers(listUsers);
         return this.shoppingListRepository.save(shoppingList);
     }
 
-    @PutMapping("/shopping/{shoppingListId}/item/{itemId}")
-    public void createRelationship(@PathVariable(name="shoppingListId") long shoppingListId, @PathVariable(name="itemId") long itemId)
+    @PutMapping("/shopping/{shoppinglistId}/item/{itemId}/quantity/{quantity}")
+    public void createRelationship(@PathVariable(name="shoppinglistId") long shoppinglistId, @PathVariable(name="itemId") long itemId, @PathVariable(name="quantity") int quantity)
     {
-        shoppingService.createRelationship(shoppingListId, itemId);
+        shoppingService.createRelationship(shoppinglistId, itemId, quantity);
+    }
+
+    @GetMapping("/shopping/{shoppinglistId}")
+    public List<Item> getAllItemsByList(@PathVariable(name="shoppinglistId") long shoppinglistId)
+    {
+        return shoppingService.getAllItems(shoppinglistId);
+    }
+
+    @PutMapping("/shopping/{shoppinglistId}/user/{userId}")
+    public void addUserToList(@PathVariable(name="shoppinglistId") long shoppinglistId, @PathVariable(name="userId") long userId)
+    {
+        shoppingService.assignUserToShoppinglist(shoppinglistId, userId);
     }
 }
