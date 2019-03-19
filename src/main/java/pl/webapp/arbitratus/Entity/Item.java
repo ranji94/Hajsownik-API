@@ -1,14 +1,19 @@
 package pl.webapp.arbitratus.Entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.apache.commons.text.WordUtils;
 
 import javax.persistence.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name="Item")
-public class Item {
+public class Item implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ITEM_ID")
     private long id;
     @Column(name = "NAME")
@@ -17,10 +22,16 @@ public class Item {
     private float price;
     @Column(name = "SHOP")
     private String shop;
-    @ManyToOne
-    @JoinColumn(name = "SHOPPINGLIST_ID")
-    @JsonIgnore
-    private ShoppingList shoppinglist;
+    @ManyToMany(mappedBy = "items")
+    List<ShoppingList> shoppinglists = new ArrayList<>();
+
+    public List<ShoppingList> getShoppinglists() {
+        return shoppinglists;
+    }
+
+    public void setShoppinglists(List<ShoppingList> shoppinglists) {
+        this.shoppinglists = shoppinglists;
+    }
 
     public Item(){
     }
@@ -37,8 +48,9 @@ public class Item {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String name)
+    {
+        this.name = WordUtils.capitalizeFully(name.trim());
     }
 
     public float getPrice() {
@@ -54,14 +66,7 @@ public class Item {
     }
 
     public void setShop(String shop) {
-        this.shop = shop;
+        this.shop = WordUtils.capitalizeFully(shop.trim());
     }
 
-    public ShoppingList getShoppinglist() {
-        return shoppinglist;
-    }
-
-    public void setShoppinglist(ShoppingList shoppinglist) {
-        this.shoppinglist = shoppinglist;
-    }
 }
