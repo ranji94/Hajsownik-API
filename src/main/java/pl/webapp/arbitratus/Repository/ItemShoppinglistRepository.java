@@ -14,6 +14,7 @@ import java.util.List;
 public interface ItemShoppinglistRepository extends JpaRepository<ItemShoppinglist, Long> {
     ItemShoppinglist findItemShoppinglistByShoppinglistId(long shoppinglistid);
     ItemShoppinglist findItemShoppinglistByShoppinglistIdAndItemId(long shoppinglistId, long itemId);
+    List<ItemShoppinglist> findItemShoppinglistsByShoppinglistId(long shoppinglistId);
     //List<ItemShoppinglist> findItemShoppinglistsByShoppinglistId(long shoppinglistid);
 
     @Query(value = "SELECT i.item FROM ItemShoppinglist i WHERE i.shoppinglist = :shoppingid")
@@ -21,4 +22,5 @@ public interface ItemShoppinglistRepository extends JpaRepository<ItemShoppingli
 
     @Query(value = "SELECT i.total FROM ItemShoppinglist i WHERE i.shoppinglist = :shoppingid")
     List<Float> getTotalValues(@Param("shoppingid")Shoppinglist shoppinglist);
+
 }

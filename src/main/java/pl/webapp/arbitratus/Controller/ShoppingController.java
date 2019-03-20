@@ -34,15 +34,14 @@ public class ShoppingController {
     @PostMapping("/shopping")
     public Shoppinglist createList(Shoppinglist shoppingList, Principal principal)
     {
-
-        return this.shoppingListRepository.save(shoppingList);
+        return this.shoppingService.createList(shoppingList,principal);
     }
     //DODAJ PRODUKT O id={itemid}, w ilości {quantity} do listy numer {shoppinglistid}
     @PutMapping("/shopping/{shoppinglistId}/item/{itemId}/quantity/{quantity}")
-    public void createRelationship(@PathVariable(name="shoppinglistId") long shoppinglistId, @PathVariable(name="itemId") long itemId, @PathVariable(name="quantity") int quantity)
+    public void createRelationship(@PathVariable(name="shoppinglistId") long shoppinglistId, @PathVariable(name="itemId") long itemId, @PathVariable(name="quantity") int quantity, Principal principal)
     {
         if(shoppingListRepository.existsShoppinglistById(shoppinglistId))
-            shoppingService.createRelationship(shoppinglistId, itemId, quantity);
+            shoppingService.createRelationship(shoppinglistId, itemId, quantity, principal);
         else
         {
             System.out.println("Dana lista nie istnieje. Utwórz nową");
@@ -51,9 +50,9 @@ public class ShoppingController {
 
     //POBIERZ WSZYSTKIE PRODUKTY PRZYPISANE DO LISTY O NR {SHOPPINGLISTID}
     @GetMapping("/shopping/{shoppinglistId}")
-    public List<Item> getAllItemsByList(@PathVariable(name="shoppinglistId") long shoppinglistId)
+    public List<Item> getAllItemsByList(@PathVariable(name="shoppinglistId") long shoppinglistId, Principal principal)
     {
-        return shoppingService.getAllItems(shoppinglistId);
+        return shoppingService.getAllItems(shoppinglistId, principal);
     }
 
     //DODAJ OSOBY DO WSPÓŁDZIELENIA KOSZTÓW LISTY
@@ -63,10 +62,34 @@ public class ShoppingController {
         shoppingService.assignUserToShoppinglist(shoppinglistId, userId, principal);
     }
 
-    //USUń POWIĄZANIE PRZEDMIOTU Z LISTĄ (narazie zbugowane)
+    //USUń POWIĄZANIE PRZEDMIOTU Z LISTĄ (JUŻ DZIAŁA)
     @DeleteMapping("/shopping/{shoppinglistId}/item/{itemId}")
-    public void deleteAssign(@PathVariable(name="shoppinglistId") long shoppinglistId, @PathVariable(name="itemId") long itemId)
+    public void deleteAssign(@PathVariable(name="shoppinglistId") long shoppinglistId, @PathVariable(name="itemId") long itemId, Principal principal)
     {
-        shoppingService.deleteItemFromShoppinglist(shoppinglistId,itemId);
+        shoppingService.deleteItemFromShoppinglist(shoppinglistId,itemId, principal);
+    }
+
+    //USUń LISTę ZAKUPOWĄ WRAZ Z POWIĄZANIAMI PRZEDMIOTóW I UżYTKOWNIKÓW DO TEJ LISTY
+    @DeleteMapping("/shopping/{shoppinglistId}")
+    public void deleteShoppingList(@PathVariable(name="shoppinglistId") long shoppinglistId, Principal principal)
+    {
+        try {
+            shoppingService.deleteShoppinglistWithAllItemAssigns(shoppinglistId, principal);
+        } catch(IllegalArgumentException | NullPointerException e)
+        {
+            System.out.println("Pojawił się wyjątek: "+e.getLocalizedMessage());
+        }
+    }
+
+    //WYRZUć UŻYTKOWNIKA POWIĄZANEGO Z TĄ LISTĄ
+    @DeleteMapping("/shopping/{shoppinglistId}/user/{userId}")
+    public void deleteUserFromList(@PathVariable(name="shoppinglistId") long shoppinglistId, @PathVariable(name="userId") long userId, Principal principal)
+    {
+        try{
+        shoppingService.deleteUserFromShoppingListAssigns(shoppinglistId, userId, principal);}
+        catch(IllegalArgumentException | NullPointerException e)
+        {
+            System.out.println("Pojawił się wyjątek "+ e.getLocalizedMessage());
+        }
     }
 }

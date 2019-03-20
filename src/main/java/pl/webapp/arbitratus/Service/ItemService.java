@@ -1,5 +1,6 @@
 package pl.webapp.arbitratus.Service;
 
+import org.apache.commons.text.WordUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.webapp.arbitratus.Entity.Item;
@@ -17,6 +18,8 @@ public class ItemService {
 
     //DODANIE (ZWERYFIKOWANEGO W PRZYSZLOSCI) OBIEKTU DO OGÓLNEJ POWSZECHNEJ BAZY DANYCH Z PRODUKTAMI
     public Item createNewItem(Item item) {
+        item.setName(WordUtils.capitalizeFully(item.getName()).trim());
+        item.setShop(WordUtils.capitalizeFully(item.getShop()).trim());
         if (itemRepository.existsItemByName(item.getName())) {
             if (itemRepository.existsItemByShop(item.getShop())) {
                 System.out.println("Ten przedmiot już istneje w bazie");

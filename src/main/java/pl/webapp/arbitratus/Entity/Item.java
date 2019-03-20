@@ -43,7 +43,7 @@ public class Item { //implements Serializable
 
     public void setName(String name)
     {
-        this.name = WordUtils.capitalizeFully(name.trim());
+        this.name = name;
     }
 
     public float getPrice() {
@@ -59,7 +59,7 @@ public class Item { //implements Serializable
     }
 
     public void setShop(String shop) {
-        this.shop = WordUtils.capitalizeFully(shop.trim());
+        this.shop = shop;
     }
 
     public List<ItemShoppinglist> getItemShoppinglists() {

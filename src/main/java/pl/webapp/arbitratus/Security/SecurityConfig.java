@@ -50,7 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticationEntryPoint(restAuthenticationEntryPoint)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/shopping/**", "/items/**", "/shoppingLists/**").authenticated()
+                .antMatchers("/shopping/**", "/items/**", "/shoppingLists/**", "/user/**").authenticated()
                 .and()
                 .formLogin()
                 .successHandler(customSuccessHandler())
