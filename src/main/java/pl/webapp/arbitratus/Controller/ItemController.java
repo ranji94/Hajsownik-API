@@ -18,6 +18,7 @@ public class ItemController {
         this.itemService = itemService;
     }
 
+    // DODAJ NOWY PRZEDMIOT DO TABELI ITEMS
     @PostMapping("/items/create")
     public Item createNewItem(@RequestBody Item item)
     {

@@ -13,8 +13,12 @@ import java.util.List;
 @Repository
 public interface ItemShoppinglistRepository extends JpaRepository<ItemShoppinglist, Long> {
     ItemShoppinglist findItemShoppinglistByShoppinglistId(long shoppinglistid);
+    ItemShoppinglist findItemShoppinglistByShoppinglistIdAndItemId(long shoppinglistId, long itemId);
     //List<ItemShoppinglist> findItemShoppinglistsByShoppinglistId(long shoppinglistid);
 
     @Query(value = "SELECT i.item FROM ItemShoppinglist i WHERE i.shoppinglist = :shoppingid")
     List<Item> getAllItems(@Param("shoppingid")Shoppinglist shoppinglist);
+
+    @Query(value = "SELECT i.total FROM ItemShoppinglist i WHERE i.shoppinglist = :shoppingid")
+    List<Float> getTotalValues(@Param("shoppingid")Shoppinglist shoppinglist);
 }

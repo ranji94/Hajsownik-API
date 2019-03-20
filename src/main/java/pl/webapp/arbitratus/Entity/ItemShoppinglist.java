@@ -14,15 +14,15 @@ public class ItemShoppinglist {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="ITEM_ID")
     @JsonIgnore
-    private Item item;
+    private Item item;  //JAKI PRZEDMIOT DODANO DO...
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="SHOPPINGLIST_ID")
     @JsonIgnore
-    private Shoppinglist shoppinglist;
+    private Shoppinglist shoppinglist; //...JAKIEJ LISTY
     @Column(name="QUANTITY")
-    private int quantity;
+    private int quantity;  //W ILOSCI
     @Column(name="TOTAL")
-    private float total;
+    private float total;  //ILOSC RAZY CENA PRZEDMIOTU, WYPELNIA SIĘ SAMO PO UŻYCIU METODY ZAIMPLEMENTOWANIEJ W SHOPPINGSERVICE
 
     public long getId() {
         return id;
@@ -63,4 +63,5 @@ public class ItemShoppinglist {
     public void setTotal(float total) {
         this.total = total;
     }
+
 }

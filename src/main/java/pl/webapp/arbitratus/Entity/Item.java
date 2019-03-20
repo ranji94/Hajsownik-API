@@ -21,9 +21,8 @@ public class Item { //implements Serializable
     @Column(name = "SHOP")
     private String shop;
     @Column(name = "APPROVED")
-    private boolean approved = true;
-    //@ManyToMany(mappedBy = "items")
-    //List<ShoppingList> shoppinglists = new ArrayList<>();
+    private boolean approved = true; //DOMYSLNIE BĘDZIE FALSE, CHODZI O TO ŻE ADMINISTRATOR BĘDZIE ZATWIERDZAŁ
+    // CZY PRODUKT DODANY PRZEZ UŻYTKOWNIKA TRAFI DO OGÓLNEJ BAZY Z KTÓREJ BĘDZIE SIĘ WYSZUKIWAŁO PRODUKTY
     @OneToMany(mappedBy = "item")
     List<ItemShoppinglist> itemShoppinglists;
 

@@ -23,6 +23,7 @@ public class UserController {
         this.passwordEncoder = passwordEncoder;
     }
 
+    //ZAREJESTRUJ NOWEGO UŻYTKOWNIKA
     @PostMapping("/registration")
     public User registerUser(@RequestBody User user) {
         if (userRepository.existsUserByUsername(user.getUsername())) {
@@ -32,7 +33,6 @@ public class UserController {
         else {
             user.setUsername(user.getUsername().toLowerCase());
             List<Shoppinglist> newList = new ArrayList<>();
-            user.setShoppinglists(newList);
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             return userRepository.save(user);
         }

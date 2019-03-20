@@ -15,6 +15,7 @@ public class ItemService {
     @Autowired
     ShoppinglistRepository shoppinglistRepository;
 
+    //DODANIE (ZWERYFIKOWANEGO W PRZYSZLOSCI) OBIEKTU DO OGÓLNEJ POWSZECHNEJ BAZY DANYCH Z PRODUKTAMI
     public Item createNewItem(Item item) {
         if (itemRepository.existsItemByName(item.getName())) {
             if (itemRepository.existsItemByShop(item.getShop())) {
@@ -28,13 +29,17 @@ public class ItemService {
         }
     }
 
+    //POBIERZ ELEMENT PO ID
     public Item getItemById(long id)
     {
         return itemRepository.findItemById(id);
     }
 
+    //POBIERZ WSZYTSTKIE  -  TO POTRZEBNE DO WYSZUKIWARKI PRZEDMIOTÓW PO STRONIE FRONTENDU
     public List<Item> getAllItems()
     {
         return itemRepository.findAll();
     }
+
+
 }
