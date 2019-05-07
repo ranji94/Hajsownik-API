@@ -1,5 +1,7 @@
 package pl.webapp.arbitratus.Entity;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.text.WordUtils;
 
 import javax.persistence.*;
@@ -7,6 +9,8 @@ import java.util.List;
 
 @Entity
 @Table(name="ITEM")
+@Getter
+@Setter
 public class Item { //implements Serializable
     private static final long serialVersionUID = 1L;
 
@@ -29,52 +33,12 @@ public class Item { //implements Serializable
     public Item(){
     }
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
     public void setName(String name)
     {
-        this.name = name;
-    }
-
-    public float getPrice() {
-        return price;
-    }
-
-    public void setPrice(float price) {
-        this.price = price;
-    }
-
-    public String getShop() {
-        return shop;
+        this.name = WordUtils.capitalizeFully(name).trim();
     }
 
     public void setShop(String shop) {
-        this.shop = shop;
-    }
-
-    public List<ItemShoppinglist> getItemShoppinglists() {
-        return itemShoppinglists;
-    }
-
-    public void setItemShoppinglists(List<ItemShoppinglist> itemShoppinglists) {
-        this.itemShoppinglists = itemShoppinglists;
-    }
-
-    public boolean isApproved() {
-        return approved;
-    }
-
-    public void setApproved(boolean approved) {
-        this.approved = approved;
+        this.shop = WordUtils.capitalizeFully(shop).trim();
     }
 }

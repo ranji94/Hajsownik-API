@@ -1,11 +1,15 @@
 package pl.webapp.arbitratus.Entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name="USERSHOPPINGLIST")
+@Getter
+@Setter
 public class UserShoppinglist {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,37 +25,4 @@ public class UserShoppinglist {
     private Shoppinglist shoppinglist;  //LISTA ZAKUPOWA
     @Column(name="OWNER")
     private String owner;  //OSOBA KTORA PLACILA I NA KORZYSC TEJ OSOBY BEDA DLUGI POWYZSZYCH USEROW
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Shoppinglist getShoppinglist() {
-        return shoppinglist;
-    }
-
-    public void setShoppinglist(Shoppinglist shoppinglist) {
-        this.shoppinglist = shoppinglist;
-    }
-
-    public String getOwner() {
-        return owner;
-    }
-
-    public void setOwner(String owner) {
-        this.owner = owner;
-    }
-
 }

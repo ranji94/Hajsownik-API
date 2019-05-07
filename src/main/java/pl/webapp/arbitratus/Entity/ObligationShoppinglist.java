@@ -1,11 +1,15 @@
 package pl.webapp.arbitratus.Entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name="OBLIGATIONSHOPPINGLIST")
+@Getter
+@Setter
 public class ObligationShoppinglist {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,28 +23,4 @@ public class ObligationShoppinglist {
     @JoinColumn(name="SHOPPINGLIST_ID")
     @JsonIgnore
     private Shoppinglist shoppinglist;  //LISTA ZAKUPOWA
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public Obligation getObligation() {
-        return obligation;
-    }
-
-    public void setObligation(Obligation obligation) {
-        this.obligation = obligation;
-    }
-
-    public Shoppinglist getShoppinglist() {
-        return shoppinglist;
-    }
-
-    public void setShoppinglist(Shoppinglist shoppinglist) {
-        this.shoppinglist = shoppinglist;
-    }
 }

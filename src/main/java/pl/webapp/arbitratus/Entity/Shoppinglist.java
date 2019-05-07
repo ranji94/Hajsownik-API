@@ -1,13 +1,17 @@
 package pl.webapp.arbitratus.Entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name="SHOPPINGLIST")
+@Getter
+@Setter
 public class Shoppinglist { //implements Serializable
     private static final long SerialVersionUID = 1L;
 
@@ -31,62 +35,5 @@ public class Shoppinglist { //implements Serializable
     List<ObligationShoppinglist> obligationShoppinglists;
     @Column(name="EDITED")
     boolean edited=false;
-
     public Shoppinglist() {}
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public List<ItemShoppinglist> getItemShoppinglists() {
-        return itemShoppinglists;
-    }
-
-    public void setItemShoppinglists(List<ItemShoppinglist> itemShoppinglists) {
-        this.itemShoppinglists = itemShoppinglists;
-    }
-
-    public Float getListtotal() {
-        return listtotal;
-    }
-
-    public void setListtotal(Float listtotal) {
-        this.listtotal = listtotal;
-    }
-
-    public List<UserShoppinglist> getUserShoppinglists() {
-        return userShoppinglists;
-    }
-
-    public void setUserShoppinglists(List<UserShoppinglist> userShoppinglists) {
-        this.userShoppinglists = userShoppinglists;
-    }
-
-    public boolean isEdited() {
-        return edited;
-    }
-
-    public void setEdited(boolean edited) {
-        this.edited = edited;
-    }
-
-    public List<ObligationShoppinglist> getObligationShoppinglists() {
-        return obligationShoppinglists;
-    }
-
-    public void setObligationShoppinglists(List<ObligationShoppinglist> obligationShoppinglists) {
-        this.obligationShoppinglists = obligationShoppinglists;
-    }
 }
