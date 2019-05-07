@@ -7,6 +7,7 @@ import pl.webapp.arbitratus.Entity.Shoppinglist;
 import pl.webapp.arbitratus.Repository.ShoppinglistRepository;
 import pl.webapp.arbitratus.Repository.UserRepository;
 import pl.webapp.arbitratus.Service.ItemService;
+import pl.webapp.arbitratus.Service.ObligationService;
 import pl.webapp.arbitratus.Service.ShoppingService;
 
 import java.security.Principal;
@@ -23,8 +24,11 @@ public class ShoppingController {
     ItemService itemService;
     @Autowired
     ShoppingService shoppingService;
+    @Autowired
+    ObligationService obligationService;
 
-    public ShoppingController(ItemService itemService, ShoppinglistRepository shoppingListRepository, ShoppingService shoppingService, UserRepository userRepository) {
+    public ShoppingController(ObligationService obligationService, ItemService itemService, ShoppinglistRepository shoppingListRepository, ShoppingService shoppingService, UserRepository userRepository) {
+        this.obligationService = obligationService;
         this.itemService = itemService;
         this.shoppingListRepository = shoppingListRepository;
         this.shoppingService = shoppingService;
@@ -36,6 +40,13 @@ public class ShoppingController {
     {
         return this.shoppingService.createList(shoppingList,principal);
     }
+
+    @PostMapping("/shopping/{shoppinglistId}/obligations/calculate")
+    public void calculateListObligations(@PathVariable(name="shoppinglistId") long shoppinglistId)
+    {
+        this.obligationService.calculateListObligations(shoppinglistId);
+    }
+
     //DODAJ PRODUKT O id={itemid}, w ilości {quantity} do listy numer {shoppinglistid}
     @PutMapping("/shopping/{shoppinglistId}/item/{itemId}/quantity/{quantity}")
     public void createRelationship(@PathVariable(name="shoppinglistId") long shoppinglistId, @PathVariable(name="itemId") long itemId, @PathVariable(name="quantity") int quantity, Principal principal)
@@ -53,6 +64,13 @@ public class ShoppingController {
     public List<Item> getAllItemsByList(@PathVariable(name="shoppinglistId") long shoppinglistId, Principal principal)
     {
         return shoppingService.getAllItems(shoppinglistId, principal);
+    }
+
+    //POKAZ WSZYSTKIE LISTY KTÓRE STWORZYLSMY LUB Z KTORYCH JESTESMY ROZLICZANI
+    @GetMapping("/shopping")
+    public List<Shoppinglist> getAllShoppingLists(Principal principal)
+    {
+        return shoppingService.getAllShoppinglists(principal);
     }
 
     //DODAJ OSOBY DO WSPÓŁDZIELENIA KOSZTÓW LISTY

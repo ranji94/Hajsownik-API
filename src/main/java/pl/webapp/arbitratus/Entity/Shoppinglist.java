@@ -27,6 +27,10 @@ public class Shoppinglist { //implements Serializable
     private Float listtotal;  //TO JEST SUMA WSZYSTKICH "TOTALI" Z ITEMSHOPPINGLIST
     @OneToMany(mappedBy = "shoppinglist")
     List<UserShoppinglist> userShoppinglists;  //ENCJA DO POWIĄZANIA LIST ZAKUPOWYCH Z UZYTKOWNIKAMI KTÓRZY BĘDĄ BULIC HAJS
+    @OneToMany(mappedBy = "shoppinglist")
+    List<ObligationShoppinglist> obligationShoppinglists;
+    @Column(name="EDITED")
+    boolean edited=false;
 
     public Shoppinglist() {}
 
@@ -68,5 +72,21 @@ public class Shoppinglist { //implements Serializable
 
     public void setUserShoppinglists(List<UserShoppinglist> userShoppinglists) {
         this.userShoppinglists = userShoppinglists;
+    }
+
+    public boolean isEdited() {
+        return edited;
+    }
+
+    public void setEdited(boolean edited) {
+        this.edited = edited;
+    }
+
+    public List<ObligationShoppinglist> getObligationShoppinglists() {
+        return obligationShoppinglists;
+    }
+
+    public void setObligationShoppinglists(List<ObligationShoppinglist> obligationShoppinglists) {
+        this.obligationShoppinglists = obligationShoppinglists;
     }
 }
