@@ -8,24 +8,27 @@ import org.springframework.stereotype.Service;
 import pl.webapp.arbitratus.Entity.User;
 import pl.webapp.arbitratus.Repository.UserRepository;
 
+import javax.transaction.Transactional;
+
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
     @Autowired
     UserRepository userRepository;
 
-    public CustomUserDetailsService(UserRepository userRepository)
-    {
-        super();
-        this.userRepository=userRepository;
-    }
-
+    @Transactional
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = this.userRepository.findByUsername(username);
-        if(null==user)
-        {
-            throw new UsernameNotFoundException("Nie można znaleźć użytkownika "+username);
-        }
-        return new CustomUserPrincipal(user);
+        User user = userRepository.findAllByUsername(username).orElseThrow(()->
+                new UsernameNotFoundException("Użytkownik o tej nazwie nie został znaleziony: "+username));
+    return UserPrincipal.create(user);
+    }
+
+    @Transactional
+    public UserDetails loadUserById(Long id) {
+        User user = userRepository.findById(id).orElseThrow(
+                () -> new UsernameNotFoundException("Użytkownik nie znaleziony o podanym id : " + id)
+        );
+
+        return UserPrincipal.create(user);
     }
 }
