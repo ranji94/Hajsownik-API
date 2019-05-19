@@ -41,4 +41,5 @@ public class Item { //implements Serializable
     public void setShop(String shop) {
         this.shop = WordUtils.capitalizeFully(shop).trim();
     }
+
 }

@@ -4,6 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import javax.annotation.PostConstruct;
 import java.util.TimeZone;
@@ -16,6 +17,7 @@ import java.util.TimeZone;
 
 
 @SpringBootApplication
+@CrossOrigin
 @EntityScan(basePackageClasses = {
 		ArbitratusApplication.class,
 		Jsr310JpaConverters.class

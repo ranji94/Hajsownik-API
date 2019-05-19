@@ -8,5 +8,6 @@ import pl.webapp.arbitratus.Entity.Item;
 public interface ItemRepository extends JpaRepository<Item, Long> {
     boolean existsItemByName(String name);
     boolean existsItemByShop(String shop);
+    boolean existsItemByNameAndShop(String name, String shop);
     Item findItemById(long id);
 }

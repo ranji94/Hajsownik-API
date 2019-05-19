@@ -1,5 +1,7 @@
 package pl.webapp.arbitratus.Controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,10 +27,13 @@ import pl.webapp.arbitratus.Security.JwtTokenProvider;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.Collections;
+import java.util.List;
 
 @RestController
 @CrossOrigin
 public class AuthenticationController {
+    private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
+
     @Autowired
     AuthenticationManager authenticationManager;
     @Autowired
@@ -40,6 +45,7 @@ public class AuthenticationController {
     @Autowired
     JwtTokenProvider tokenProvider;
 
+    //logowanie
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest)
     {
@@ -55,21 +61,27 @@ public class AuthenticationController {
         return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
     }
 
+    //pobierz wszystkich userów
+    @GetMapping("/users/getall")
+    public List<User> getAllUsers(){
+        return userRepository.findAll();
+    }
+
+    //rejestracja
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
         if(userRepository.existsUserByUsername(signUpRequest.getUsername())) {
-            return new ResponseEntity(new ApiResponse(false, "Username is already taken!"),
+            return new ResponseEntity(new ApiResponse(false, "Nazwa użytkownika jest już zajęta!"),
                     HttpStatus.BAD_REQUEST);
         }
 
-        // Creating user's account
         User user = new User();
         user.setUsername(signUpRequest.getUsername());
         user.setPassword(signUpRequest.getPassword());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         Role userRole = roleRepository.findByName(RoleName.ROLE_USER)
-                .orElseThrow(() -> new AppException("User Role not set."));
+                .orElseThrow(() -> new AppException("Rola użytkownika nie została ustawiona."));
 
         user.setRoles(Collections.singleton(userRole));
 
@@ -79,6 +91,6 @@ public class AuthenticationController {
                 .fromCurrentContextPath().path("/api/users/{username}")
                 .buildAndExpand(result.getUsername()).toUri();
 
-        return ResponseEntity.created(location).body(new ApiResponse(true, "User registered successfully"));
+        return ResponseEntity.created(location).body(new ApiResponse(true, "Użytkownika zarejestrowano pomyślnie"));
     }
 }

@@ -1,16 +1,22 @@
 package pl.webapp.arbitratus.Service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.webapp.arbitratus.Entity.*;
 import pl.webapp.arbitratus.Repository.*;
+import pl.webapp.arbitratus.Security.JwtTokenProvider;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
 public class ShoppingService {
+    private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
+
     @Autowired
     ShoppinglistRepository shoppinglistRepository;
     @Autowired
@@ -46,6 +52,42 @@ public class ShoppingService {
         return shoppinglistRepository.save(shoppinglist);
     }
 
+    public boolean isOwner(long shoppinglistId, Principal principal){
+        List<UserShoppinglist> usershoppingrelation = userShoppinglistRepository.findUserShoppinglistsByShoppinglistId(shoppinglistId);
+
+        try {
+            if (usershoppingrelation.get(0).getOwner().equals(principal.getName())) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (NullPointerException e)
+        {
+            logger.error("Podana lista nie istnieje");
+            return false;
+        }
+    }
+
+    public List<User> getAllUsersByList(long shoppingListId)
+    {
+        List<UserShoppinglist> ulist = userShoppinglistRepository.findUserShoppinglistsByShoppinglistId(shoppingListId);
+        List<User> uzytkownicyListy = new ArrayList<>();
+        for(int i=0;i<ulist.size();i++)
+        {
+            uzytkownicyListy.add(ulist.get(i).getUser());
+        }
+        return uzytkownicyListy;
+    }
+
+    public ItemShoppinglist getQuantity(long shoppinglistId, long itemId){
+        ItemShoppinglist itemlist = itemShoppinglistRepository.findItemShoppinglistByShoppinglistIdAndItemId(shoppinglistId,itemId);
+        return itemlist;
+    }
+
+    public List<Item> getAllItems(){
+        return itemRepository.findAll();
+    }
+
     public List<Shoppinglist> getAllShoppinglists(Principal principal)
     {
         List<UserShoppinglist> userShoppinglists = userShoppinglistRepository.findUserShoppinglistsByUserId(userRepository.findByUsername(principal.getName()).getId());
@@ -55,7 +97,6 @@ public class ShoppingService {
         {
             shoppinglists.add(element.getShoppinglist());
         }
-
         return shoppinglists;
     }
 
@@ -92,6 +133,10 @@ public class ShoppingService {
         {
             System.out.println("Brak dostępu do tej listy. Ta lista należy do kogoś innego");
         }
+    }
+
+    public float getListTotal(long shoppinglistid){
+        return shoppinglistRepository.findShoppinglistById(shoppinglistid).getListtotal();
     }
 
     //POBIERZ WSZYSTKIE PRZEDMIOTY PRZYPISANE DO LISTY O ID {shoppinglistId}

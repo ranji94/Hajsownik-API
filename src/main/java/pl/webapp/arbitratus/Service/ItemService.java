@@ -1,8 +1,10 @@
 package pl.webapp.arbitratus.Service;
 
-import org.apache.commons.text.WordUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import pl.webapp.arbitratus.Entity.Item;
 import pl.webapp.arbitratus.Repository.ItemRepository;
 import pl.webapp.arbitratus.Repository.ShoppinglistRepository;
@@ -16,22 +18,6 @@ public class ItemService {
     @Autowired
     ShoppinglistRepository shoppinglistRepository;
 
-    //DODANIE (ZWERYFIKOWANEGO W PRZYSZLOSCI) OBIEKTU DO OGÓLNEJ POWSZECHNEJ BAZY DANYCH Z PRODUKTAMI
-    public Item createNewItem(Item item) {
-        item.setName(WordUtils.capitalizeFully(item.getName()).trim());
-        item.setShop(WordUtils.capitalizeFully(item.getShop()).trim());
-        if (itemRepository.existsItemByName(item.getName())) {
-            if (itemRepository.existsItemByShop(item.getShop())) {
-                System.out.println("Ten przedmiot już istneje w bazie");
-                return null;
-            } else {
-                return itemRepository.save(item);
-            }
-        } else {
-            return itemRepository.save(item);
-        }
-    }
-
     //POBIERZ ELEMENT PO ID
     public Item getItemById(long id)
     {
@@ -44,5 +30,14 @@ public class ItemService {
         return itemRepository.findAll();
     }
 
-
+    public Item addItem(Item item) {
+        if(!itemRepository.existsItemByNameAndShop(item.getName(), item.getShop()) && item.getPrice()>0)
+        {
+            return itemRepository.save(item);
+        }
+        else
+        {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wprowadź poprawne dane");
+        }
+    }
 }

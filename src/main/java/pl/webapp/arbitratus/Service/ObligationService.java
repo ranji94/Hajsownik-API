@@ -1,15 +1,24 @@
 package pl.webapp.arbitratus.Service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.webapp.arbitratus.Entity.*;
+import pl.webapp.arbitratus.Model.ObligationStack;
 import pl.webapp.arbitratus.Repository.*;
+import pl.webapp.arbitratus.Security.JwtTokenProvider;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class ObligationService {
+    private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
+
     @Autowired
     ObligationRepository obligationRepository;
     @Autowired
@@ -34,10 +43,88 @@ public class ObligationService {
         return obligationRepository.findObligationsByWho(principal.getName());
     }
 
-    //POKAZ WSZYSTKIE UZNANIA
-    public List<Obligation> getCredits(Principal principal)
+    public List<ObligationStack> getLiabilitiesStack(Principal principal)
     {
-        return obligationRepository.findObligationsByWhom(principal.getName());
+        long id = 1;
+        List<Obligation> liabilities = obligationRepository.findObligationsByWho(principal.getName());
+        List<ObligationStack> stosObligacji = new ArrayList<>();
+        Set<String> exists = new HashSet<>();
+
+        for(Obligation liability : liabilities){
+            exists.add(liability.getWhom());
+        }
+
+        for(Obligation liability : liabilities){
+            if(exists.contains(liability.getWhom()))
+            {
+                float suma = 0;
+                exists.remove(liability.getWhom());
+                List<Obligation> obligationOneWhom = obligationRepository.findObligationsByWhoAndWhom(principal.getName(), liability.getWhom());
+                ObligationStack oneStack = new ObligationStack();
+                oneStack.setName(liability.getWhom());
+                oneStack.setId(id);
+                id++;
+
+                for(Obligation oneWhomAmount : obligationOneWhom){
+                    suma += oneWhomAmount.getAmount();
+                }
+                oneStack.setAmount(suma);
+                stosObligacji.add(oneStack);
+            }
+        }
+        return stosObligacji;
+    }
+
+    public float getCreditsSum(Principal principal)
+    {
+        List<Obligation> obligations = obligationRepository.findObligationsByWhom(principal.getName());
+        float sum = 0.0F;
+        for(Obligation ob : obligations){
+            sum+=ob.getAmount();
+        }
+        return sum;
+    }
+
+    public float getLiabilitiesSum(Principal principal)
+    {
+        List<Obligation> obligations = obligationRepository.findObligationsByWho(principal.getName());
+        float sum = 0.0F;
+        for(Obligation ob : obligations){
+            sum+=ob.getAmount();
+        }
+        return sum;
+    }
+
+    public List<ObligationStack> getCreditsStack(Principal principal)
+    {
+        long id = 1;
+        List<Obligation> credits = obligationRepository.findObligationsByWhom(principal.getName());
+        List<ObligationStack> stosObligacji = new ArrayList<>();
+        Set<String> exists = new HashSet<>();
+
+        for(Obligation credit : credits){
+            exists.add(credit.getWho());
+        }
+
+        for(Obligation credit : credits){
+            if(exists.contains(credit.getWho()))
+            {
+                float suma = 0;
+                exists.remove(credit.getWho());
+                List<Obligation> obligationOneWho = obligationRepository.findObligationsByWhoAndWhom(credit.getWho(),principal.getName());
+                ObligationStack oneStack = new ObligationStack();
+                oneStack.setName(credit.getWho());
+                oneStack.setId(id);
+                id++;
+
+                for(Obligation oneWhoAmount : obligationOneWho){
+                    suma += oneWhoAmount.getAmount();
+                }
+                oneStack.setAmount(suma);
+                stosObligacji.add(oneStack);
+            }
+        }
+        return stosObligacji;
     }
 
     public Obligation createNewObligation(long debtorId, Principal principal, long shoppinglistId) {
@@ -77,16 +164,20 @@ public class ObligationService {
 
     public void calculateListObligations(long shoppinglistId) //Wykonywać po zatwierdzeniu listy
     {
-        float total = shoppinglistRepository.findShoppinglistById(shoppinglistId).getListtotal();
-        int usersInList = obligationShoppinglistRepository.findObligationShoppinglistsByShoppinglistId(shoppinglistId).size() + 1;
-        float kwota = (float) (Math.round((total/usersInList) * 100.0) / 100.0);
-        System.out.println("Obliczono kwote do podzialu pomiedzy "+usersInList+" uzytkownikow: "+kwota);
-        List<ObligationShoppinglist> zadluzeniaListy = obligationShoppinglistRepository.findObligationShoppinglistsByShoppinglistId(shoppinglistId);
+        try {
+            float total = shoppinglistRepository.findShoppinglistById(shoppinglistId).getListtotal();
+            int usersInList = obligationShoppinglistRepository.findObligationShoppinglistsByShoppinglistId(shoppinglistId).size() + 1;
+            float kwota = (float) (Math.round((total / usersInList) * 100.0) / 100.0);
+            System.out.println("Obliczono kwote do podzialu pomiedzy " + usersInList + " uzytkownikow: " + kwota);
+            List<ObligationShoppinglist> zadluzeniaListy = obligationShoppinglistRepository.findObligationShoppinglistsByShoppinglistId(shoppinglistId);
 
-        for(ObligationShoppinglist obligacja : zadluzeniaListy)
+            for (ObligationShoppinglist obligacja : zadluzeniaListy) {
+                obligacja.getObligation().setAmount(kwota);
+                obligationRepository.save(obligacja.getObligation());
+            }
+        } catch (NullPointerException e)
         {
-            obligacja.getObligation().setAmount(kwota);
-            obligationRepository.save(obligacja.getObligation());
+            logger.error("Użytkownik już istnieje na liście");
         }
     }
 
