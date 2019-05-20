@@ -210,9 +210,10 @@ public class ShoppingService {
         userShoppinglist.forEach(userlist -> userlist.setUser(null));
         userShoppinglist.forEach(userlist -> userlist.setShoppinglist(null));
         itemShoppinglistRepository.deleteAll(itemShoppinglist);
+        obligationService.deleteListObligations(shoppinglistId);
         userShoppinglistRepository.deleteAll(userShoppinglist);
         shoppinglistRepository.delete(shoppinglist);
-        obligationService.deleteListObligations(shoppinglistId);}
+        }
         else
         {
             System.out.println("Ten użytkownik nie należy do danej listy zakupowej w związku z czym nie ma prawa jej usunąć");
