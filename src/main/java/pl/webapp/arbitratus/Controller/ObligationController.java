@@ -16,7 +16,9 @@ import pl.webapp.arbitratus.Service.ObligationService;
 
 import javax.validation.constraints.Null;
 import java.security.Principal;
+import java.util.ConcurrentModificationException;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 @CrossOrigin
@@ -81,7 +83,7 @@ public class ObligationController {
     public ResponseEntity<List<ObligationStack>> showAllLiabilitiesStack(Principal principal)
     {
         try{
-            return new ResponseEntity<List<ObligationStack>>(obligationService.getLiabilitiesStack(principal), HttpStatus.OK);
+            return new ResponseEntity<List<ObligationStack>>(obligationService.getReducedLiabilities(principal), HttpStatus.OK);
         } catch (IllegalArgumentException | NullPointerException e)
         {
             logger.error("Wystąpił wyjątek "+e.getMessage());
@@ -93,7 +95,7 @@ public class ObligationController {
     public ResponseEntity<List<ObligationStack>> showAllCreditsStack(Principal principal)
     {
         try{
-            return new ResponseEntity<List<ObligationStack>>(obligationService.getCreditsStack(principal), HttpStatus.OK);
+            return new ResponseEntity<List<ObligationStack>>(obligationService.getReducedCredits(principal), HttpStatus.OK);
         } catch (IllegalArgumentException | NullPointerException e)
         {
             logger.error("Wystąpił wyjątek" + e.getMessage());

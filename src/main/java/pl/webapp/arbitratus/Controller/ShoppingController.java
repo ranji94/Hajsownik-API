@@ -3,10 +3,13 @@ package pl.webapp.arbitratus.Controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.util.UriComponentsBuilder;
 import pl.webapp.arbitratus.Entity.Item;
 import pl.webapp.arbitratus.Entity.ItemShoppinglist;
 import pl.webapp.arbitratus.Entity.Shoppinglist;
@@ -18,6 +21,7 @@ import pl.webapp.arbitratus.Service.ItemService;
 import pl.webapp.arbitratus.Service.ObligationService;
 import pl.webapp.arbitratus.Service.ShoppingService;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.Null;
 import java.security.Principal;
 import java.util.List;
@@ -96,7 +100,7 @@ public class ShoppingController {
     }
 
     //POBIERZ WSZYSTKIE PRODUKTY PRZYPISANE DO LISTY O NR {SHOPPINGLISTID}
-    @GetMapping("/shopping/{shoppinglistId}")
+    @GetMapping(value = "/shopping/{shoppinglistId}")
     public List<Item> getAllItemsByList(@PathVariable(name="shoppinglistId") long shoppinglistId, Principal principal)
     {
         try {
@@ -131,8 +135,7 @@ public class ShoppingController {
 
     //POKAZ WSZYSTKIE LISTY KTÓRE STWORZYLSMY LUB Z KTORYCH JESTESMY ROZLICZANI
     @GetMapping("/shopping")
-    public List<Shoppinglist> getAllShoppingLists(Principal principal)
-    {
+    public List<Shoppinglist> getAllShoppingLists(Principal principal) {
         return shoppingService.getAllShoppinglists(principal);
     }
 

@@ -10,10 +10,7 @@ import pl.webapp.arbitratus.Repository.*;
 import pl.webapp.arbitratus.Security.JwtTokenProvider;
 
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class ObligationService {
@@ -75,24 +72,84 @@ public class ObligationService {
         return stosObligacji;
     }
 
+    public List<ObligationStack> getReducedCredits(Principal principal) {
+        List<ObligationStack> credits = this.getCreditsStack(principal);
+        List<ObligationStack> liabilities = this.getLiabilitiesStack(principal);
+        try{
+        for(int i=0;i<credits.size();i++){
+            for(ObligationStack liability : liabilities){
+                if(credits.get(i).getName().equals(liability.getName())){
+                    float redukcja = credits.get(i).getAmount() - liability.getAmount();
+
+                    if(redukcja<0){
+                        credits.remove(credits.get(i));
+                    }
+                    else {
+                        credits.get(i).setAmount(redukcja);
+                    }
+                }
+            }
+        }
+        return credits;
+        }
+        catch(IndexOutOfBoundsException e){
+            logger.error(e.getMessage());
+            return null;
+        }
+    }
+
+    public List<ObligationStack> getReducedLiabilities(Principal principal) {
+        List<ObligationStack> credits = this.getCreditsStack(principal);
+        List<ObligationStack> liabilities = this.getLiabilitiesStack(principal);
+        try {
+            for (int i = 0; i < liabilities.size(); i++) {
+                for (ObligationStack credit : credits) {
+                    if (liabilities.get(i).getName().equals(credit.getName())) {
+                        float redukcja = liabilities.get(i).getAmount() - credit.getAmount();
+                        if (redukcja < 0) {
+                            liabilities.remove(liabilities.get(i));
+                        } else {
+                            liabilities.get(i).setAmount(redukcja);
+                        }
+                    }
+                }
+            }
+            return liabilities;
+        } catch(IndexOutOfBoundsException e){
+            logger.error(e.getMessage());
+            return null;
+        }
+
+    }
+
     public float getCreditsSum(Principal principal)
     {
-        List<Obligation> obligations = obligationRepository.findObligationsByWhom(principal.getName());
-        float sum = 0.0F;
-        for(Obligation ob : obligations){
-            sum+=ob.getAmount();
+        try {
+            List<ObligationStack> obligations = this.getReducedCredits(principal);
+            float sum = 0.0F;
+            for (ObligationStack ob : obligations) {
+                sum += ob.getAmount();
+            }
+            return sum;
+        } catch(IndexOutOfBoundsException e){
+            logger.error(e.getMessage());
+            return 0;
         }
-        return sum;
     }
 
     public float getLiabilitiesSum(Principal principal)
     {
-        List<Obligation> obligations = obligationRepository.findObligationsByWho(principal.getName());
-        float sum = 0.0F;
-        for(Obligation ob : obligations){
-            sum+=ob.getAmount();
+        try {
+            List<ObligationStack> obligations = this.getReducedLiabilities(principal);
+            float sum = 0.0F;
+            for (ObligationStack ob : obligations) {
+                sum += ob.getAmount();
+            }
+            return sum;
+        } catch(IndexOutOfBoundsException e){
+            logger.error(e.getMessage());
+            return 0;
         }
-        return sum;
     }
 
     public List<ObligationStack> getCreditsStack(Principal principal)

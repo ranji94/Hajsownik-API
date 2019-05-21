@@ -11,6 +11,7 @@ import pl.webapp.arbitratus.Security.JwtTokenProvider;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -97,6 +98,7 @@ public class ShoppingService {
         {
             shoppinglists.add(element.getShoppinglist());
         }
+        Collections.reverse(shoppinglists);
         return shoppinglists;
     }
 
@@ -143,11 +145,14 @@ public class ShoppingService {
     public List<Item> getAllItems(long shoppinglistId, Principal principal) {
         User uprzywilejowany = userRepository.findByUsername(principal.getName());
         if(userShoppinglistRepository.existsUserShoppinglistByShoppinglistIdAndUserId(shoppinglistId,uprzywilejowany.getId())
-        || userShoppinglistRepository.existsUserShoppinglistByShoppinglistIdAndOwner(shoppinglistId,principal.getName()))
-            return itemShoppinglistRepository.getAllItems(shoppinglistRepository.findShoppinglistById(shoppinglistId));
+        || userShoppinglistRepository.existsUserShoppinglistByShoppinglistIdAndOwner(shoppinglistId,principal.getName())) {
+            List<Item> it = itemShoppinglistRepository.getAllItems(shoppinglistRepository.findShoppinglistById(shoppinglistId));
+            Collections.reverse(it);
+            return it;
+        }
         else
         {
-            System.out.println("Ten użytkownik nie ma dostępu do tej listy");
+            logger.error("Ten użytkownik nie ma dostępu do listy numer "+shoppinglistId);
             return null;
         }
     }
