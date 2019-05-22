@@ -94,7 +94,7 @@ public class ObligationService {
         }
         catch(IndexOutOfBoundsException e){
             logger.error(e.getMessage());
-            return null;
+            return new ArrayList<>();
         }
     }
 
@@ -117,7 +117,7 @@ public class ObligationService {
             return liabilities;
         } catch(IndexOutOfBoundsException e){
             logger.error(e.getMessage());
-            return null;
+            return new ArrayList<>();
         }
 
     }
