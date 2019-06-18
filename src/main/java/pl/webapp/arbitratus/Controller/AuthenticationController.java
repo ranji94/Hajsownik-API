@@ -26,6 +26,7 @@ import pl.webapp.arbitratus.Security.JwtTokenProvider;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
 
@@ -65,6 +66,15 @@ public class AuthenticationController {
     @GetMapping("/users/getall")
     public List<User> getAllUsers(){
         return userRepository.findAll();
+    }
+
+    @GetMapping("/users/current")
+    public String getCurrentUser(Principal principal){
+        try{
+            return principal.getName();} catch (NullPointerException e){
+            logger.error("Brak zalogowanego użytkownika");
+            return null;
+        }
     }
 
     //rejestracja

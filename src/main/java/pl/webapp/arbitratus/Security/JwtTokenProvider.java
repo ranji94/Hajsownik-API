@@ -1,13 +1,11 @@
 package pl.webapp.arbitratus.Security;
 
 import io.jsonwebtoken.*;
-import net.bytebuddy.pool.TypePool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
-import pl.webapp.arbitratus.Entity.User;
 
 import java.util.Date;
 
@@ -15,7 +13,7 @@ import java.util.Date;
 public class JwtTokenProvider {
     private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
 
-    @Value("${app.jwtSecret}")
+    @Value("${app.jwtSecret}")  //Wartość zapisana w Application.Properties
     private String jwtSecret;
 
     @Value("${app.jwtExpirationInMs}")
@@ -27,10 +25,10 @@ public class JwtTokenProvider {
         Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
 
         return Jwts.builder()
-                .setSubject(Long.toString(userPrincipal.getId()))
-                .setIssuedAt(new Date())
-                .setExpiration(expiryDate)
-                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .setSubject(Long.toString(userPrincipal.getId()))  //kogo dotyczy token
+                .setIssuedAt(new Date()) // data utworzenia
+                .setExpiration(expiryDate) // data utraty ważności
+                .signWith(SignatureAlgorithm.HS512, jwtSecret) //algorytm szyfrowania i tajny klucz
                 .compact();
     }
 
